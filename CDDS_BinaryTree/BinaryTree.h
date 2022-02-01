@@ -107,6 +107,7 @@ inline TreeNode<T>* BinaryTree<T>::find(T value)
 template<typename T>
 inline void BinaryTree<T>::draw(TreeNode<T>* selected)
 {
+	draw(m_root, 400, 40, 400, selected);
 }
 
 template<typename T>
@@ -116,6 +117,32 @@ inline bool BinaryTree<T>::findNode(T searchValue, TreeNode<T>*& nodeFound, Tree
 }
 
 template<typename T>
-inline void BinaryTree<T>::draw(TreeNode<T>* node, int x, int y, int horizontalSpacing, TreeNode<T>* selected)
+inline void BinaryTree<T>::draw(TreeNode<T>* currentNode, int x, int y, int horizontalSpacing, TreeNode<T>* selected)
 {
+	//Decrease the horizontal space as the nodes draw
+	horizontalSpacing /= 2;
+
+	//Check if the current node is null
+	if (currentNode)
+	{
+		//Draws the left child if this node has one
+		if (currentNode->hasLeft())
+		{
+			//Draws a line between the left child and the current node
+			DrawLine(x, y, x - horizontalSpacing, y + 80, RED);
+			//Draws the left child
+			draw(currentNode->getLeft(), x - horizontalSpacing, y + 80, horizontalSpacing, selected);
+		}
+
+		//Draws the right child if this node has one
+		if (currentNode->hasRight())
+		{
+			//Draws a line between this child and the current node
+			DrawLine(x, y, x + horizontalSpacing, y + 80, RED);
+			//Draws the right child
+			draw(currentNode->getRight(), x + horizontalSpacing, y + 80, horizontalSpacing, selected);
+		}
+		//Draws the current node
+		currentNode->draw(x, y, (selected == currentNode));
+	}
 }
