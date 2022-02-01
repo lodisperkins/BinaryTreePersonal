@@ -93,7 +93,7 @@ inline TreeNode<T>* TreeNode<T>::getLeft()
 template<typename T>
 inline TreeNode<T>* TreeNode<T>::getRight()
 {
-	return NULL;
+	return m_right;
 }
 
 template<typename T>
