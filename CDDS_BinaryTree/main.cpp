@@ -1,3 +1,31 @@
+/*******************************************************************************************
+*
+*   raylib [core] example - Basic window
+*
+*   Welcome to raylib!
+*
+*   To test examples, just press F6 and execute raylib_compile_execute script
+*   Note that compiled executable is placed in the same folder as .c file
+*
+*   You can find all basic examples on C:\raylib\raylib\examples folder or
+*   raylib official webpage: www.raylib.com
+*
+*   Enjoy using raylib. :)
+*
+*   This example has been created using raylib 1.0 (www.raylib.com)
+*   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+*
+*   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+*
+********************************************************************************************/
+
+//insert
+//removing a leaf
+//removing node with one child
+//removing node with two children
+//finding nodes in list
+
+
 #include "raylib.h"
 
 #define RAYGUI_IMPLEMENTATION
@@ -5,6 +33,52 @@
 #include "raygui.h"
 #include "BinaryTree.h"
 #include "TreeNode.h"
+#include <vector>
+#include <time.h>
+#include <iostream>
+
+//initialize binary tree
+BinaryTree<int> binaryTree = BinaryTree<int>();
+TreeNode<int>* selectedNode = nullptr;
+int valueBoxValue = 0;
+bool valueBoxEditMode = false;
+std::vector<int> valuesAdded = std::vector<int>();
+
+void insertValue(int randVal)
+{
+    try
+    {
+        selectedNode = binaryTree.find(randVal);
+        binaryTree.insert(randVal);
+
+        if (!selectedNode)
+            valuesAdded.push_back(randVal);
+    }
+    catch (...)
+    {
+        std::cout << "Error trying to insert node: " << randVal;
+    }
+}
+
+void removeValue(int randVal)
+{
+    try
+    {
+        binaryTree.remove(randVal);
+        for (std::vector<int>::iterator iter = valuesAdded.begin(); iter != valuesAdded.end(); ++iter)
+        {
+            if (*iter == randVal)
+            {
+                valuesAdded.erase(iter);
+                break;
+            }
+        }
+    }
+    catch (...)
+    {
+        std::cout << "Error trying to remove node: " << randVal;
+    }
+}
 
 int main(int argc, char* argv[])
 {
@@ -12,21 +86,23 @@ int main(int argc, char* argv[])
     //--------------------------------------------------------------------------------------
     int screenWidth = 800;
     int screenHeight = 450;
-
+    bool insertEnabled = false;
+    bool removeEnabled = false;
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
-
+    srand(time(NULL));
     SetTargetFPS(60);
     //--------------------------------------------------------------------------------------
 
-    //initialize binary tree
-    BinaryTree<int> binaryTree = BinaryTree<int>();
-    TreeNode<int>* selectedNode = nullptr;
-    int valueBoxValue = 0;
-    bool valueBoxEditMode = false;
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        // Update
+        //----------------------------------------------------------------------------------
+        // TODO: Update your variables here
+        //----------------------------------------------------------------------------------
+
+
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
@@ -35,19 +111,33 @@ int main(int argc, char* argv[])
 
         GuiSetStyle(TEXTBOX, TEXT_ALIGNMENT, GUI_TEXT_ALIGN_CENTER);
 
-        if (GuiValueBox(Rectangle{ 25, 25, 125, 30 }, NULL, &valueBoxValue, 0, 100, valueBoxEditMode)) valueBoxEditMode = !valueBoxEditMode;
+        GuiValueBox(Rectangle{ 25, 25, 125, 30 }, NULL, &valueBoxValue, 0, 100, valueBoxEditMode);
 
-        if (GuiButton(Rectangle{ 160, 25, 125, 30 }, GuiIconText(RICON_OK_TICK, "Insert")))
+        if (GuiButton(Rectangle{ 160, 25, 125, 30 }, GuiIconText(RICON_OK_TICK, "Toggle Insert")))
         {
             // Implement the code to insert valueBoxValue into your binary tree here! 
-            binaryTree.insert(valueBoxValue);
-            selectedNode = binaryTree.find(valueBoxValue);
+            insertEnabled = !insertEnabled;
         }
 
-        if (GuiButton(Rectangle{ 160, 60, 125, 30 }, GuiIconText(RICON_CROSS, "Remove")))
+        if (GuiButton(Rectangle{ 160, 60, 125, 30 }, GuiIconText(RICON_CROSS, "Toggle Remove")))
         {
             // Implement the code to remove the node with value = valueBoxValue from your binary tree here! 
-            binaryTree.remove(valueBoxValue);
+            removeEnabled = !removeEnabled;
+        }
+
+        int randVal = rand() % 100;
+
+        if (insertEnabled)
+        {
+            insertValue(randVal);
+            valueBoxValue = randVal;
+        }
+
+        randVal = rand() % 100;
+        if (removeEnabled)
+        {
+            removeValue(randVal);
+            valueBoxValue = randVal;
         }
 
         // draw the binary tree
